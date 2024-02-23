@@ -12,9 +12,9 @@ abstract type Persistable <: InitableLoadable end
 
 const LOADED = true
 const MISSING = false
-load_disk!(obj::T)                     where T <: Persistable = return 0<length((files=list_files(obj);)) ? JLD2.load("$(largest(files))", "cached") : nothing
-save_disk(obj::T, needclean=true)      where T <: Persistable = (needclean && clean_files(list_files(obj)); JLD2.save(unique_filename(obj), "cached",obj); obj)
-save_disk_SAFE(obj::T, needclean=true) where T <: Persistable = (needclean && clean_files(excluded_best(list_files(obj))); JLD2.save(unique_filename(obj), "cached",obj); obj)
+load_disk(obj::T)                      where T <: Persistable = return 0<length((files=list_files(obj);)) ? (@show largest(files); JLD2.load(largest(files), "cached")) : nothing
+save_disk(obj::T, needclean=true)      where T <: Persistable = (needclean && clean_files(folder(obj) .* list_files(obj)); JLD2.save(folder(obj) *  unique_filename(obj), "cached",obj); obj)
+save_disk_SAFE(obj::T, needclean=true) where T <: Persistable = (needclean && clean_files(folder(obj) .* excluded_best(list_files(obj))); JLD2.save(folder(obj) * unique_filename(obj), "cached",obj); obj)
 
 
 # Helper functions
@@ -28,16 +28,20 @@ largest(files::Vector{String})                     = files[TOP1_idx(files)]
 strip_jld2(fname::String)                          = fname[1:end-5]
 clean_files(files::Vector{String})                 = rm_if_exist.(files)
 rm_if_exist(fname::String)                         = isfile(fname) && rm(fname)
-mkfolder_if_not_exist(fname::String)               = for dir in split(fname, "/")
-	dir == "." && continue
-	isdir(dir) && mkdir(dir)
+mkfolder_if_not_exist(fname::String)               = begin
+	whole_dir = ""
+	for dir in split(fname, "/")
+		whole_dir *= dir * "/"
+		dir in [".", ""] && continue
+		!isdir(whole_dir) && mkdir(whole_dir)
+	end
 end
 
 
 
 ############ TO REDEFINE!
 # The directory you want the object to persist.
-folder(obj::T)              where T <: Persistable = mkfolder_if_not_exist("./data")
+folder(obj::T)              where T <: Persistable = (mkfolder_if_not_exist((foldname="./data/";)); return foldname)
 # The glob pattern that finds the files (You can use asterix to match custom fields)
 glob_pattern(obj::T)        where T <: Persistable = "*.jld2" # throw("Unimplemented... So basically to get the files list it is advised for you to build this.") #"$(T)_$(obj.config)_*_*"*".jld2"
 # The unqiue filename for your 
@@ -45,9 +49,12 @@ unique_filename(obj::T)     where T <: Persistable = "$(T)_$(obj.config)_$(obj.f
 # Get config arguments
 parse_filename(fname::String)                      = split(strip_jld2(fname),"_")
 # Convert arguments to value
-parse_args(args...)                                = ((tipe, config, fr, to = args); return String(tipe), String(config), parse(Int,fr), parse(Int,to))
+parse_args(args...)                                = ((tipe, config, fr, to) = args; return String(tipe), String(config), parse(Int,fr), parse(Int,to))
 # Score your files to find the best that should be kept
-score(data)                                        = begin tipe, config, fr, to = data...; return to - fr; end
+score(data)                                        = begin 
+	(tipe, config, fr, to) = data
+	return to - fr
+end
 
 
 end # module PersistableStruct
