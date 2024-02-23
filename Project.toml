@@ -1,0 +1,4 @@
+name = "PersistableStruct"
+uuid = "8ae4430d-dc1b-4714-beb8-6d50226d6b35"
+authors = ["Marcell <havlikmarcell@gmail.com>"]
+version = "0.1.0"
