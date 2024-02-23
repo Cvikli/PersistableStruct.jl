@@ -4,4 +4,6 @@ authors = ["Marcell <havlikmarcell@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+Glob = "c27321d9-0574-5035-807b-f59d2c89b15c"
 InitLoadableStruct = "c2283afa-f45b-4432-83db-f4cc05c12624"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
