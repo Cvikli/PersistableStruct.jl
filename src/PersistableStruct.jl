@@ -1,6 +1,8 @@
 module PersistableStruct
 
-using ExtendableStruct: Extendable
+using JLD2
+using Glob
+using InitLoadableStruct: InitableLoadable
 
 
 abstract type Persistable <: InitableLoadable end
@@ -39,7 +41,7 @@ folder(obj::T)              where T <: Persistable = mkfolder_if_not_exist("./da
 # The glob pattern that finds the files (You can use asterix to match custom fields)
 glob_pattern(obj::T)        where T <: Persistable = "*.jld2" # throw("Unimplemented... So basically to get the files list it is advised for you to build this.") #"$(T)_$(obj.config)_*_*"*".jld2"
 # The unqiue filename for your 
-unique_filename(obj::T    ) where T <: Persistable = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
+unique_filename(obj::T)     where T <: Persistable = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
 # Get config arguments
 parse_filename(fname::String)                      = split(strip_jld2(fname),"_")
 # Convert arguments to value

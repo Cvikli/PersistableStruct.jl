@@ -3,6 +3,7 @@ Persistable data interface
 
 In short, this pkg is to create the simples interface to make your struct persistable. :)
 
+*Use this with:* [UltimateStruct.jl](https://github.com/Cvikli/UniversalStruct.jl)
 
 
 ## Example
@@ -14,7 +15,7 @@ folder(obj::T)              where T <: Persistable = "./"
 # The glob pattern that finds the files (You can use asterix to match custom fields)
 glob_pattern(obj::T)        where T <: Persistable = "$(T)_$(obj.config)_*_*"*".jld2"
 # The unqiue filename for your 
-unique_filename(obj::T    ) where T <: Persistable = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
+unique_filename(obj::T)     where T <: Persistable = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
 # Get config arguments
 parse_filename(fname::String)                      = split(strip_jld2(fname),"_")
 # Convert arguments to value
