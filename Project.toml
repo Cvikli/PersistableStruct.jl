@@ -2,3 +2,6 @@ name = "PersistableStruct"
 uuid = "8ae4430d-dc1b-4714-beb8-6d50226d6b35"
 authors = ["Marcell <havlikmarcell@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+InitLoadableStruct = "c2283afa-f45b-4432-83db-f4cc05c12624"
