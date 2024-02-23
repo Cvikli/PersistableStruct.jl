@@ -10,7 +10,7 @@ abstract type Persistable <: InitableLoadable end
 # TODO if it is possible do a way to make this work.
 # @persist obj extend!(obj,c) load_data!(obj)
 
-load_disk(obj)                         = return 0<length((files=list_files(obj);)) ? (@show largest(files); JLD2.load(largest(files), "cached")) : nothing
+load_disk(obj)                         = return 0<length((files=list_files(obj);)) ? JLD2.load(largest(files), "cached") : nothing
 save_disk(obj, needclean=true)         = (needclean && clean_files(list_files(obj));                JLD2.save(folder(obj) * unique_filename(obj), "cached", obj); obj)
 save_disk_SAFE(obj, needclean=true)    = (needclean && clean_files(excluded_best(list_files(obj))); JLD2.save(folder(obj) * unique_filename(obj), "cached", obj); obj)
 
