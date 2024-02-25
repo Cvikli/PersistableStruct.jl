@@ -2,24 +2,25 @@ module PersistableStruct
 
 using JLD2
 using Glob
-using InitLoadableStruct: InitableLoadable
 
 
-abstract type Persistable <: InitableLoadable end
+abstract type Persistable end
 
 # TODO if it is possible do a way to make this work.
 # @persist obj extend!(obj,c) load_data!(obj)
 
 load_disk(obj)                         = return 0<length((files=list_files(obj);)) ? JLD2.load(largest(files), "cached") : nothing
-save_disk(obj, needclean=true)         = (needclean && clean_files(list_files(obj));                JLD2.save(folder(obj) * unique_filename(obj), "cached", obj); obj)
-save_disk_SAFE(obj, needclean=true)    = (needclean && clean_files(excluded_best(list_files(obj))); JLD2.save(folder(obj) * unique_filename(obj), "cached", obj); obj)
+save_disk(obj, needclean=true)         = (needclean && clean_files(list_files(obj));                JLD2.save(sure_folder(obj) * unique_filename(obj), "cached", obj); obj)
+save_disk_SAFE(obj, needclean=true)    = (needclean && clean_files(excluded_best(list_files(obj))); JLD2.save(sure_folder(obj) * unique_filename(obj), "cached", obj); obj)
 
 
 # Helper functions
-list_files(obj)                        = glob(glob_pattern(obj), folder(obj))
+list_files(obj)                        = glob(glob_pattern(obj), sure_folder(obj))
 TOP1_idx(files::Vector{String})        = argmax(score.(parse_args.(parse_filename.(files))))
 excluded_best(files::Vector{String})   = (top_idx = TOP1_idx(files); [files[i] for i in 1:length(files) if i !==top_idx])  # IF WE would like to be VERY safe... then we can keep the last 2 version!
 largest(files::Vector{String})         = files[TOP1_idx(files)]
+endwithslash(dir)                      = ((dir[end] == '/' && println("we add a slash to the end of the folder: ", dir[end])); return dir[end] == '/' ? dir : dir*"/")
+sure_folder(obj)                       = (mkfolder_if_not_exist((foldname=endwithslash(folder(obj));)); return foldname)
 
 
 # Utils
@@ -39,7 +40,7 @@ end
 
 ############ TO REDEFINE!
 # The directory you want the object to persist.
-folder(obj)                             = (mkfolder_if_not_exist((foldname="./data/";)); return foldname)
+folder(obj)                             = "./data/"
 # The glob pattern that finds the files (You can use asterix to match custom fields)
 glob_pattern(obj)                       = "*.jld2" # throw("Unimplemented... So basically to get the files list it is advised for you to build this.") #"$(T)_$(obj.config)_*_*"*".jld2"
 # The unqiue filename for your 
