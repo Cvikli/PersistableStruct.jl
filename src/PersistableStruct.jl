@@ -3,6 +3,7 @@ module PersistableStruct
 using JLD2
 using Glob
 
+using Unimplemented
 
 abstract type Persistable end
 
@@ -40,20 +41,20 @@ end
 
 ############ TO REDEFINE!
 # The directory you want the object to persist.
-folder(obj)                             = "./data/"
+folder(obj)                     = "./data/"
 # The glob pattern that finds the files (You can use asterix to match custom fields)
-glob_pattern(obj)                       = "*.jld2" # throw("Unimplemented... So basically to get the files list it is advised for you to build this.") #"$(T)_$(obj.config)_*_*"*".jld2"
-# The unqiue filename for your 
-unique_filename(obj::T)        where T  = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
+glob_pattern(obj)               = "*.jld2" # throw("Unimplemented... So basically to get the files list it is advised for you to build this.") #"$(T)_$(obj.config)_*_*"*".jld2"
 # Get config arguments
-parse_filename(fname::String)           = split(strip_jld2(fname),"_")
+parse_filename(fname::String)   = split(strip_jld2(fname),"_")
+# The unqiue filename for your 
+@interface unique_filename(obj) # = "$(T)_$(obj.config)_$(obj.fr)_$(obj.to).jld2" 
 # Convert arguments to value
-parse_args(args...)                     = ((tipe, config, fr, to) = args; return String(tipe), String(config), parse(Int,fr), parse(Int,to))
+@interface parse_args(args...)  #   = ((tipe, config, fr, to) = args; return String(tipe), String(config), parse(Int,fr), parse(Int,to))
 # Score your files to find the best that should be kept
-score(data)                             = begin 
-	(tipe, config, fr, to) = data
-	return to - fr
-end
+@interface score(data)          # = begin 
+# 	(tipe, config, fr, to) = data
+# 	return to - fr
+# end
 
 
 end # module PersistableStruct
