@@ -20,7 +20,7 @@ list_files(obj)                        = glob(glob_pattern(obj), sure_folder(obj
 TOP1_idx(files::Vector{String})        = argmax(score.(parse_args.(parse_filename.(files))))
 excluded_best(files::Vector{String})   = (top_idx = TOP1_idx(files); [files[i] for i in 1:length(files) if i !==top_idx])  # IF WE would like to be VERY safe... then we can keep the last 2 version!
 largest(files::Vector{String})         = files[TOP1_idx(files)]
-endwithslash(dir)                      = ((dir[end] == '/' && println("we add a slash to the end of the folder: ", dir[end])); return dir[end] == '/' ? dir : dir*"/")
+endwithslash(dir)                      = ((dir[end] !== '/' && println("we add a slash to the end of the folder: ", dir ," appended: '/'")); return dir[end] == '/' ? dir : dir*"/")
 sure_folder(obj)                       = (mkfolder_if_not_exist((foldname=endwithslash(folder(obj));)); return foldname)
 
 
